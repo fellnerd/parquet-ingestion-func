@@ -1,0 +1,21 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    
+    "PARQUET_CONFIG_STORAGE_CONNECTION": "UseDevelopmentStorage=true",
+    "PARQUET_CONFIG_CONTAINER": "config",
+    
+    "PARQUET_OUTPUT_ADLS_ACCOUNT": "stadlsdatavaultweu001",
+    "PARQUET_OUTPUT_CONTAINER": "stage-fs",
+    
+    "BUFFER_MIN_ROWS": "100",
+    "BUFFER_MAX_ROWS": "10000",
+    "BUFFER_MAX_AGE_MINUTES": "60",
+    
+    "SOURCE_JIRA_ENDPOINT": "https://company.atlassian.net/rest/api/3/search",
+    "SOURCE_JIRA_USER": "your-email@company.com",
+    "SOURCE_JIRA_API_TOKEN": "your-api-token"
+  }
+}
