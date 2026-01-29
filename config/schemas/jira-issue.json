@@ -1,0 +1,254 @@
+{
+  "$schema": "../entity.schema.json",
+  "entity": "issue",
+  "source": "jira-cloud",
+  "description": "Jira Cloud Issue schema with field mappings",
+  
+  "source_mapping": {
+    "description": "Maps Jira API response fields to target columns",
+    "mappings": [
+      {
+        "source_path": "id",
+        "target_column": "issue_id",
+        "data_type": "string"
+      },
+      {
+        "source_path": "key",
+        "target_column": "issue_key",
+        "data_type": "string"
+      },
+      {
+        "source_path": "self",
+        "target_column": "self_url",
+        "data_type": "string"
+      },
+      {
+        "source_path": "fields.summary",
+        "target_column": "summary",
+        "data_type": "string"
+      },
+      {
+        "source_path": "fields.description.content",
+        "target_column": "description_content",
+        "data_type": "string",
+        "transform": "json_stringify"
+      },
+      {
+        "source_path": "fields.issuetype.name",
+        "target_column": "issue_type",
+        "data_type": "string"
+      },
+      {
+        "source_path": "fields.issuetype.id",
+        "target_column": "issue_type_id",
+        "data_type": "string"
+      },
+      {
+        "source_path": "fields.status.name",
+        "target_column": "status",
+        "data_type": "string"
+      },
+      {
+        "source_path": "fields.status.id",
+        "target_column": "status_id",
+        "data_type": "string"
+      },
+      {
+        "source_path": "fields.status.statusCategory.name",
+        "target_column": "status_category",
+        "data_type": "string"
+      },
+      {
+        "source_path": "fields.priority.name",
+        "target_column": "priority",
+        "data_type": "string"
+      },
+      {
+        "source_path": "fields.priority.id",
+        "target_column": "priority_id",
+        "data_type": "string"
+      },
+      {
+        "source_path": "fields.project.key",
+        "target_column": "project_key",
+        "data_type": "string"
+      },
+      {
+        "source_path": "fields.project.id",
+        "target_column": "project_id",
+        "data_type": "string"
+      },
+      {
+        "source_path": "fields.project.name",
+        "target_column": "project_name",
+        "data_type": "string"
+      },
+      {
+        "source_path": "fields.creator.accountId",
+        "target_column": "creator_account_id",
+        "data_type": "string"
+      },
+      {
+        "source_path": "fields.creator.displayName",
+        "target_column": "creator_display_name",
+        "data_type": "string"
+      },
+      {
+        "source_path": "fields.reporter.accountId",
+        "target_column": "reporter_account_id",
+        "data_type": "string"
+      },
+      {
+        "source_path": "fields.reporter.displayName",
+        "target_column": "reporter_display_name",
+        "data_type": "string"
+      },
+      {
+        "source_path": "fields.assignee.accountId",
+        "target_column": "assignee_account_id",
+        "data_type": "string"
+      },
+      {
+        "source_path": "fields.assignee.displayName",
+        "target_column": "assignee_display_name",
+        "data_type": "string"
+      },
+      {
+        "source_path": "fields.created",
+        "target_column": "created_at",
+        "data_type": "timestamp"
+      },
+      {
+        "source_path": "fields.updated",
+        "target_column": "updated_at",
+        "data_type": "timestamp"
+      },
+      {
+        "source_path": "fields.resolutiondate",
+        "target_column": "resolved_at",
+        "data_type": "timestamp"
+      },
+      {
+        "source_path": "fields.duedate",
+        "target_column": "due_date",
+        "data_type": "date"
+      },
+      {
+        "source_path": "fields.labels",
+        "target_column": "labels",
+        "data_type": "string",
+        "transform": "json_stringify"
+      },
+      {
+        "source_path": "fields.components",
+        "target_column": "components",
+        "data_type": "string",
+        "transform": "json_stringify"
+      },
+      {
+        "source_path": "fields.fixVersions",
+        "target_column": "fix_versions",
+        "data_type": "string",
+        "transform": "json_stringify"
+      },
+      {
+        "source_path": "fields.parent.key",
+        "target_column": "parent_key",
+        "data_type": "string"
+      },
+      {
+        "source_path": "fields.parent.id",
+        "target_column": "parent_id",
+        "data_type": "string"
+      },
+      {
+        "source_path": "fields.timeoriginalestimate",
+        "target_column": "time_original_estimate_seconds",
+        "data_type": "integer"
+      },
+      {
+        "source_path": "fields.timeestimate",
+        "target_column": "time_estimate_seconds",
+        "data_type": "integer"
+      },
+      {
+        "source_path": "fields.timespent",
+        "target_column": "time_spent_seconds",
+        "data_type": "integer"
+      },
+      {
+        "source_path": "fields.aggregatetimeoriginalestimate",
+        "target_column": "aggregate_time_original_estimate_seconds",
+        "data_type": "integer"
+      },
+      {
+        "source_path": "fields.aggregatetimeestimate",
+        "target_column": "aggregate_time_estimate_seconds",
+        "data_type": "integer"
+      },
+      {
+        "source_path": "fields.aggregatetimespent",
+        "target_column": "aggregate_time_spent_seconds",
+        "data_type": "integer"
+      },
+      {
+        "source_path": "fields.customfield_10016",
+        "target_column": "story_points",
+        "data_type": "float"
+      },
+      {
+        "source_path": "fields.customfield_10020",
+        "target_column": "sprint",
+        "data_type": "string",
+        "transform": "json_stringify"
+      }
+    ]
+  },
+  
+  "target_schema": {
+    "description": "Expected Parquet schema after transformation",
+    "columns": [
+      {"name": "issue_id", "type": "string", "nullable": false},
+      {"name": "issue_key", "type": "string", "nullable": false},
+      {"name": "self_url", "type": "string", "nullable": true},
+      {"name": "summary", "type": "string", "nullable": true},
+      {"name": "description_content", "type": "string", "nullable": true},
+      {"name": "issue_type", "type": "string", "nullable": true},
+      {"name": "issue_type_id", "type": "string", "nullable": true},
+      {"name": "status", "type": "string", "nullable": true},
+      {"name": "status_id", "type": "string", "nullable": true},
+      {"name": "status_category", "type": "string", "nullable": true},
+      {"name": "priority", "type": "string", "nullable": true},
+      {"name": "priority_id", "type": "string", "nullable": true},
+      {"name": "project_key", "type": "string", "nullable": true},
+      {"name": "project_id", "type": "string", "nullable": true},
+      {"name": "project_name", "type": "string", "nullable": true},
+      {"name": "creator_account_id", "type": "string", "nullable": true},
+      {"name": "creator_display_name", "type": "string", "nullable": true},
+      {"name": "reporter_account_id", "type": "string", "nullable": true},
+      {"name": "reporter_display_name", "type": "string", "nullable": true},
+      {"name": "assignee_account_id", "type": "string", "nullable": true},
+      {"name": "assignee_display_name", "type": "string", "nullable": true},
+      {"name": "created_at", "type": "timestamp", "nullable": true},
+      {"name": "updated_at", "type": "timestamp", "nullable": true},
+      {"name": "resolved_at", "type": "timestamp", "nullable": true},
+      {"name": "due_date", "type": "date", "nullable": true},
+      {"name": "labels", "type": "string", "nullable": true},
+      {"name": "components", "type": "string", "nullable": true},
+      {"name": "fix_versions", "type": "string", "nullable": true},
+      {"name": "parent_key", "type": "string", "nullable": true},
+      {"name": "parent_id", "type": "string", "nullable": true},
+      {"name": "time_original_estimate_seconds", "type": "integer", "nullable": true},
+      {"name": "time_estimate_seconds", "type": "integer", "nullable": true},
+      {"name": "time_spent_seconds", "type": "integer", "nullable": true},
+      {"name": "aggregate_time_original_estimate_seconds", "type": "integer", "nullable": true},
+      {"name": "aggregate_time_estimate_seconds", "type": "integer", "nullable": true},
+      {"name": "aggregate_time_spent_seconds", "type": "integer", "nullable": true},
+      {"name": "story_points", "type": "float", "nullable": true},
+      {"name": "sprint", "type": "string", "nullable": true},
+      {"name": "dss_load_date", "type": "timestamp", "nullable": false},
+      {"name": "dss_record_source", "type": "string", "nullable": false},
+      {"name": "dss_source_file_name", "type": "string", "nullable": false}
+    ]
+  }
+}

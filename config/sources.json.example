@@ -1,0 +1,172 @@
+{
+  "$schema": "./sources.schema.json",
+  "version": "1.0",
+  "sources": [
+    {
+      "id": "jira/cloud/issue",
+      "concept": "jira",
+      "source": "cloud",
+      "entity": "issue",
+      "description": "Jira Cloud Issues via REST API",
+      
+      "fetch": {
+        "type": "active",
+        "endpoint": "${JIRA_BASE_URL}/rest/api/3/search",
+        "method": "GET",
+        "timeout": 60,
+        "auth": {
+          "type": "basic",
+          "username": "${JIRA_USERNAME}",
+          "password": "${JIRA_API_TOKEN}"
+        },
+        "params": {
+          "jql": "updated >= -{fetch_window_minutes}m",
+          "maxResults": "100",
+          "expand": "changelog"
+        },
+        "headers": {
+          "Accept": "application/json"
+        }
+      },
+      
+      "schedule": {
+        "enabled": true,
+        "cron": "0 */15 * * * *",
+        "fetch_window_minutes": 20
+      },
+      
+      "response": {
+        "data_path": "issues",
+        "schema_ref": "schemas/jira-issue.json"
+      },
+      
+      "buffer": {
+        "min_rows": 10,
+        "max_rows": 5000,
+        "max_age_minutes": 60
+      },
+      
+      "output": {
+        "compression": "snappy",
+        "row_group_size": 100000
+      }
+    },
+    
+    {
+      "id": "webhook/github/push",
+      "concept": "github",
+      "source": "webhook",
+      "entity": "push",
+      "description": "GitHub Push Events (Passive - receives webhooks)",
+      
+      "fetch": {
+        "type": "passive"
+      },
+      
+      "schedule": {
+        "enabled": false
+      },
+      
+      "response": {
+        "data_path": "$"
+      },
+      
+      "buffer": {
+        "min_rows": 1,
+        "max_rows": 1000,
+        "max_age_minutes": 30
+      },
+      
+      "output": {
+        "compression": "snappy"
+      }
+    },
+    
+    {
+      "id": "werkportal/api/company",
+      "concept": "werkportal",
+      "source": "api",
+      "entity": "company",
+      "description": "Werkportal Company Data",
+      
+      "fetch": {
+        "type": "active",
+        "endpoint": "${WERKPORTAL_API_URL}/api/v1/companies",
+        "method": "GET",
+        "timeout": 30,
+        "auth": {
+          "type": "bearer",
+          "token": "${WERKPORTAL_API_TOKEN}"
+        }
+      },
+      
+      "schedule": {
+        "enabled": true,
+        "cron": "0 0 * * * *",
+        "fetch_window_minutes": 65
+      },
+      
+      "response": {
+        "data_path": "data"
+      },
+      
+      "buffer": {
+        "min_rows": 50,
+        "max_rows": 10000,
+        "max_age_minutes": 120
+      },
+      
+      "output": {
+        "compression": "snappy"
+      }
+    },
+    
+    {
+      "id": "erp/rest/orders",
+      "concept": "erp",
+      "source": "rest",
+      "entity": "order",
+      "description": "ERP Orders via REST API with API Key",
+      
+      "fetch": {
+        "type": "active",
+        "endpoint": "${ERP_API_URL}/orders",
+        "method": "POST",
+        "timeout": 45,
+        "auth": {
+          "type": "api_key",
+          "header_name": "X-API-Key",
+          "api_key": "${ERP_API_KEY}"
+        },
+        "body": {
+          "filter": {
+            "updated_since": "{last_fetch_timestamp}"
+          },
+          "page_size": 500
+        }
+      },
+      
+      "schedule": {
+        "enabled": true,
+        "cron": "0 */30 * * * *",
+        "fetch_window_minutes": 35
+      },
+      
+      "response": {
+        "data_path": "result.orders",
+        "schema_ref": "schemas/erp-order.json"
+      },
+      
+      "buffer": {
+        "min_rows": 100,
+        "max_rows": 50000,
+        "max_age_minutes": 240
+      },
+      
+      "output": {
+        "compression": "zstd",
+        "row_group_size": 50000
+      }
+    }
+  ]
+}
