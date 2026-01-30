@@ -11,7 +11,7 @@
       
       "fetch": {
         "type": "active",
-        "endpoint": "${WERKPORTAL_API_URL}/api/generics/wp_invoices",
+        "endpoint": "${WERKPORTAL_API_URL}/api/generics/wp_invoices/",
         "method": "GET",
         "timeout": 60,
         "auth": {
@@ -19,7 +19,8 @@
           "token": "${WERKPORTAL_API_TOKEN}"
         },
         "params": {
-          "ordering": "-date_created"
+          "ordering": "-invoice_date",
+          "page_size": "100"
         },
         "headers": {
           "Accept": "application/json"
@@ -38,8 +39,8 @@
       },
       
       "buffer": {
-        "min_rows": 50,
-        "max_rows": 10000,
+        "min_rows": 30,
+        "max_rows": 60,
         "max_age_minutes": 60
       },
       

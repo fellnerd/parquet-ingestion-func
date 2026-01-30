@@ -1,0 +1,107 @@
+### Variables
+@baseUrl = http://localhost:7071
+@sourceId = werkportal__api__invoice
+@sourceIdEncoded = werkportal__api__invoice
+@sourceName = Werkportal Invoice
+@contentType = application/json
+
+### ============================================================================
+### HEALTH & STATUS
+### ============================================================================
+
+###
+### Health Check (Anonymous)
+GET {{baseUrl}}/api/mgmt/health HTTP/1.1
+
+### ============================================================================
+### SOURCES MANAGEMENT
+### ============================================================================
+
+###
+### List All Sources
+GET {{baseUrl}}/api/mgmt/sources HTTP/1.1
+
+###
+### Get Source by ID
+GET {{baseUrl}}/api/mgmt/sources/{{sourceIdEncoded}} HTTP/1.1
+
+###
+### Update Source Configuration (Buffer, Schedule, Output)
+PUT {{baseUrl}}/api/mgmt/sources/{{sourceIdEncoded}} HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+  "buffer": {
+    "min_rows": 1,
+    "max_rows": 100,
+    "max_age_minutes": 10
+  }
+}
+
+###
+### Update Schedule Only
+PATCH {{baseUrl}}/api/mgmt/sources/{{sourceIdEncoded}} HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+  "schedule": {
+    "enabled": true,
+    "cron": "0 */15 * * * *"
+  }
+}
+
+###
+### Reload Configuration
+POST {{baseUrl}}/api/mgmt/reload-config HTTP/1.1
+
+### ============================================================================
+### BUFFER & METADATA
+### ============================================================================
+
+###
+### Get Buffer Status for Source
+GET {{baseUrl}}/api/mgmt/buffer/{{sourceIdEncoded}} HTTP/1.1
+
+###
+### Get Ingestion Metadata for Source
+GET {{baseUrl}}/api/mgmt/metadata/{{sourceIdEncoded}} HTTP/1.1
+
+###
+### Get Flush Status / Prediction (NEW)
+# Shows when the next flush will happen based on rows and age
+GET {{baseUrl}}/api/mgmt/flush-status/{{sourceIdEncoded}} HTTP/1.1
+
+### ============================================================================
+### INGEST ORCHESTRATION
+### ============================================================================
+
+###
+### Trigger Ingest (Active Source)
+POST {{baseUrl}}/api/ingest/{{sourceId}} HTTP/1.1
+Content-Type: {{contentType}}
+
+###
+### Trigger Ingest with Force Flush
+POST {{baseUrl}}/api/ingest/{{sourceId}}?force_flush=true HTTP/1.1
+Content-Type: {{contentType}}
+
+###
+### Trigger Ingest (Passive Source with Payload)
+POST {{baseUrl}}/api/ingest/{{sourceId}} HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+  "data": [
+    {
+      "id": "123",
+      "name": "Test Record"
+    }
+  ]
+}
+
+###
+### Get Ingest Status (requires instance_id)
+# @instanceId = your-instance-id-here
+GET {{baseUrl}}/api/ingest/{{sourceId}}?instance_id={{instanceId}} HTTP/1.1
+
+###

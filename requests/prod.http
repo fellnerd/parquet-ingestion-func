@@ -1,0 +1,134 @@
+### Variables
+@baseUrl = https://dimetrics-api-weu-001.azure-api.net/func-parquetingest-weu-001
+@apiKey = {{$dotenv AZURE_APIM_KEY}}
+@sourceId = werkportal__api__invoice
+@sourceIdEncoded = werkportal__api__invoice
+@sourceName = Werkportal Invoice
+@contentType = application/json
+@trace = true
+
+### ============================================================================
+### HEALTH & STATUS
+### ============================================================================
+
+###
+### Health Check (Anonymous)
+GET {{baseUrl}}/mgmt/health HTTP/1.1
+Ocp-Apim-Trace: {{trace}}
+
+### ============================================================================
+### SOURCES MANAGEMENT
+### ============================================================================
+
+###
+### List All Sources
+GET {{baseUrl}}/mgmt/sources HTTP/1.1
+Ocp-Apim-Subscription-Key: {{apiKey}}
+Ocp-Apim-Trace: {{trace}}
+
+###
+### Get Source by ID
+GET {{baseUrl}}/mgmt/sources/{{sourceIdEncoded}} HTTP/1.1
+Ocp-Apim-Subscription-Key: {{apiKey}}
+Ocp-Apim-Trace: {{trace}}
+
+###
+### Update Source Configuration (Buffer, Schedule, Output)
+PUT {{baseUrl}}/mgmt/sources/{{sourceIdEncoded}} HTTP/1.1
+Ocp-Apim-Subscription-Key: {{apiKey}}
+Content-Type: {{contentType}}
+Ocp-Apim-Trace: {{trace}}
+
+{
+  "buffer": {
+    "min_rows": 30,
+    "max_rows": 60,
+    "max_age_minutes": 60
+  }
+}
+
+###
+### Update Schedule Only
+PATCH {{baseUrl}}/mgmt/sources/{{sourceIdEncoded}} HTTP/1.1
+Ocp-Apim-Subscription-Key: {{apiKey}}
+Content-Type: {{contentType}}
+Ocp-Apim-Trace: {{trace}}
+
+{
+  "schedule": {
+    "enabled": true,
+    "cron": "0 */15 * * * *"
+  }
+}
+
+###
+### Reload Configuration
+POST {{baseUrl}}/mgmt/reload-config HTTP/1.1
+Ocp-Apim-Subscription-Key: {{apiKey}}
+Ocp-Apim-Trace: {{trace}}
+
+### ============================================================================
+### BUFFER & METADATA
+### ============================================================================
+
+###
+### Get Buffer Status for Source
+GET {{baseUrl}}/mgmt/buffer/{{sourceIdEncoded}} HTTP/1.1
+Ocp-Apim-Subscription-Key: {{apiKey}}
+Ocp-Apim-Trace: {{trace}}
+
+###
+### Get Ingestion Metadata for Source
+GET {{baseUrl}}/mgmt/metadata/{{sourceIdEncoded}} HTTP/1.1
+Ocp-Apim-Subscription-Key: {{apiKey}}
+Ocp-Apim-Trace: {{trace}}
+
+###
+### Get Flush Status / Prediction (NEW)
+# Shows when the next flush will happen based on rows and age
+GET {{baseUrl}}/mgmt/flush-status/{{sourceIdEncoded}} HTTP/1.1
+Ocp-Apim-Subscription-Key: {{apiKey}}
+Ocp-Apim-Trace: {{trace}}
+
+### ============================================================================
+### INGEST ORCHESTRATION
+### ============================================================================
+
+###
+### Trigger Ingest (Active Source)
+POST {{baseUrl}}/ingest/{{sourceId}} HTTP/1.1
+Ocp-Apim-Subscription-Key: {{apiKey}}
+Content-Type: {{contentType}}
+Ocp-Apim-Trace: {{trace}}
+
+###
+### Trigger Ingest with Force Flush
+POST {{baseUrl}}/ingest/{{sourceId}}?force_flush=true HTTP/1.1
+Ocp-Apim-Subscription-Key: {{apiKey}}
+Content-Type: {{contentType}}
+Ocp-Apim-Trace: {{trace}}
+
+###
+### Trigger Ingest (Passive Source with Payload)
+POST {{baseUrl}}/ingest/{{sourceId}} HTTP/1.1
+Ocp-Apim-Subscription-Key: {{apiKey}}
+Content-Type: {{contentType}}
+Ocp-Apim-Trace: {{trace}}
+
+{
+  "data": [
+    {
+      "id": "123",
+      "name": "Test Record"
+    }
+  ]
+}
+
+###
+### Get Ingest Status (requires instance_id)
+# @instanceId = your-instance-id-here
+GET {{baseUrl}}/ingest/{{sourceId}}?instance_id={{instanceId}} HTTP/1.1
+Ocp-Apim-Subscription-Key: {{apiKey}}
+Ocp-Apim-Trace: {{trace}}
+
+###

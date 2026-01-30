@@ -3,7 +3,7 @@
   "version": "1.0",
   "sources": [
     {
-      "id": "werkportal/api/invoice",
+      "id": "werkportal__api__invoice",
       "concept": "werkportal",
       "source": "api",
       "entity": "invoice",

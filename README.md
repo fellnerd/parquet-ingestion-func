@@ -113,7 +113,7 @@ Invoke-RestMethod -Uri "http://localhost:7071/api/mgmt/sources" -Method GET | Co
 
 ```powershell
 # Ingest and flush immediately (force_flush=true)
-$response = Invoke-RestMethod -Uri "http://localhost:7071/api/ingest/werkportal/api/invoice?force_flush=true" -Method POST
+$response = Invoke-RestMethod -Uri "http://localhost:7071/api/ingest/werkportal__api__invoice?force_flush=true" -Method POST
 Write-Host "Orchestration ID: $($response.id)"
 Start-Sleep -Seconds 15
 Invoke-RestMethod -Uri $response.statusQueryGetUri -Method GET | Select-Object runtimeStatus, output | ConvertTo-Json -Depth 10
@@ -121,7 +121,7 @@ Invoke-RestMethod -Uri $response.statusQueryGetUri -Method GET | Select-Object r
 
 ```powershell
 # Ingest and buffer (no force_flush, waits for min_rows or max_age)
-$response = Invoke-RestMethod -Uri "http://localhost:7071/api/ingest/werkportal/api/invoice" -Method POST
+$response = Invoke-RestMethod -Uri "http://localhost:7071/api/ingest/werkportal__api__invoice" -Method POST
 Write-Host "Orchestration ID: $($response.id)"
 Start-Sleep -Seconds 20
 Invoke-RestMethod -Uri $response.statusQueryGetUri -Method GET | Select-Object runtimeStatus, output | ConvertTo-Json -Depth 10
@@ -131,14 +131,14 @@ Invoke-RestMethod -Uri $response.statusQueryGetUri -Method GET | Select-Object r
 
 ```powershell
 az storage blob list --account-name synplaygrounddatalake --container-name stage-fs \
-  --prefix "werkportal/api/invoice/delta" --auth-mode login --output table
+  --prefix "werkportal__api__invoice/delta" --auth-mode login --output table
 ```
 
 ### Inspect Parquet File
 
 ```powershell
 # Download and analyze
-$file = "werkportal/api/invoice/delta/2026-01-29T19-06-39Z.parquet"
+$file = "werkportal__api__invoice/delta/2026-01-29T19-06-39Z.parquet"
 az storage blob download --account-name synplaygrounddatalake --container-name stage-fs \
   --name $file --file "C:\temp\test.parquet" --auth-mode login --output none
 

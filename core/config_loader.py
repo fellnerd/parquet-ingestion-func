@@ -257,3 +257,17 @@ class ConfigLoader:
         self._config_cache = None
         self._cache_timestamp = None
         logger.info("Configuration cache invalidated")
+    
+    def get_all_sources(self, force_reload: bool = False) -> list[SourceConfig]:
+        """
+        Get all source configurations as a list.
+        Alias for load_all_sources().sources with force_reload support.
+        
+        Args:
+            force_reload: If True, bypass cache and reload from storage
+            
+        Returns:
+            List of SourceConfig objects
+        """
+        config = self.load_all_sources(force_reload)
+        return config.sources
