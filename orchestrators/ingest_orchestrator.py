@@ -133,12 +133,27 @@ def ingest_orchestrator(context: df.DurableOrchestrationContext):
             "config": config
         })
         
+        logger.info(f"Transformed {len(transformed) if transformed else 0} records")
+        
+        if not transformed:
+            logger.warning(f"No transformed records for {source_id}")
+            return {
+                "status": "success",
+                "source_id": source_id,
+                "records_fetched": records_fetched,
+                "buffer_rows": buffer_state.get("row_count", 0),
+                "parquet_written": None,
+                "warning": "Transform returned empty"
+            }
+        
         # Step 6: Append to buffer
         new_buffer_state = yield context.call_activity("append_buffer", {
             "source_id": source_id,
             "records": transformed,
             "current_state": buffer_state
         })
+        
+        logger.info(f"Buffer state after append: {new_buffer_state}")
         
         # Step 7: Decide if we should write Parquet
         buffer_config = config.get("buffer", {})
@@ -149,9 +164,12 @@ def ingest_orchestrator(context: df.DurableOrchestrationContext):
             trigger_type=trigger_type
         )
         
+        logger.info(f"should_write={should_write}, force_flush={force_flush}, row_count={new_buffer_state.get('row_count', 0)}")
+        
         parquet_written = None
         
         if should_write:
+            logger.info(f"Calling write_parquet for {source_id}")
             # Step 8: Write Parquet file
             parquet_result = yield context.call_activity("write_parquet", {
                 "source_id": source_id,
@@ -159,6 +177,7 @@ def ingest_orchestrator(context: df.DurableOrchestrationContext):
                 "buffer_state": new_buffer_state
             })
             
+            logger.info(f"write_parquet result: {parquet_result}")
             parquet_written = parquet_result.get("file_path")
             
             # Step 9: Clear buffer after successful write

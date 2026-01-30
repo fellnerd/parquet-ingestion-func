@@ -59,6 +59,8 @@ class ConfigLoader:
     def _load_from_storage(self) -> Optional[dict]:
         """Load configuration from Azure Blob Storage."""
         try:
+            logger.info(f"Loading config from storage: container={self.config_container}, blob={self.config_blob}")
+            logger.info(f"Storage connection: {self.storage_connection[:50] if self.storage_connection else 'None'}...")
             blob_service = self._get_blob_client()
             blob_client = blob_service.get_blob_client(
                 container=self.config_container,
@@ -67,10 +69,12 @@ class ConfigLoader:
             
             download = blob_client.download_blob()
             content = download.readall().decode("utf-8")
-            return json.loads(content)
+            config = json.loads(content)
+            logger.info(f"Loaded config with {len(config.get('sources', []))} sources")
+            return config
         
         except Exception as e:
-            logger.warning(f"Failed to load config from storage: {e}")
+            logger.error(f"Failed to load config from storage: {e}", exc_info=True)
             return None
     
     def _resolve_env_variables(self, value: Any) -> Any:

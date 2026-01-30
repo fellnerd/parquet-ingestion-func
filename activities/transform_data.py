@@ -40,7 +40,10 @@ def transform_data(input: dict) -> list[dict]:
     records = input.get("records", [])
     config = input.get("config", {})
     
+    logger.info(f"transform_data called with {len(records) if records else 0} records")
+    
     if not records:
+        logger.warning("transform_data: no records provided")
         return []
     
     logger.info(f"Transforming {len(records)} records")

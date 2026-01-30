@@ -1,0 +1,52 @@
+{
+  "$schema": "./sources.schema.json",
+  "version": "1.0",
+  "sources": [
+    {
+      "id": "werkportal/api/invoice",
+      "concept": "werkportal",
+      "source": "api",
+      "entity": "invoice",
+      "description": "Werkportal Invoices (wp_invoices)",
+      
+      "fetch": {
+        "type": "active",
+        "endpoint": "${WERKPORTAL_API_URL}/api/generics/wp_invoices",
+        "method": "GET",
+        "timeout": 60,
+        "auth": {
+          "type": "token",
+          "token": "${WERKPORTAL_API_TOKEN}"
+        },
+        "params": {
+          "ordering": "-date_created"
+        },
+        "headers": {
+          "Accept": "application/json"
+        }
+      },
+      
+      "schedule": {
+        "enabled": true,
+        "cron": "0 */15 * * * *",
+        "fetch_window_minutes": 20
+      },
+      
+      "response": {
+        "data_path": "results",
+        "schema_ref": "schemas/werkportal-invoice.json"
+      },
+      
+      "buffer": {
+        "min_rows": 50,
+        "max_rows": 10000,
+        "max_age_minutes": 60
+      },
+      
+      "output": {
+        "compression": "snappy",
+        "row_group_size": 100000
+      }
+    }
+  ]
+}

@@ -53,6 +53,7 @@ class BufferConfig(BaseModel):
 
 class ScheduleConfig(BaseModel):
     """Schedule configuration for timer triggers."""
+    enabled: bool = True
     type: str = "timer"  # timer, http_trigger
     cron: Optional[str] = None
     fetch_window_minutes: int = 20
@@ -71,12 +72,18 @@ class SourceConfig(BaseModel):
     concept: str
     source: str
     entity: str
+    description: Optional[str] = None
     fetch: FetchConfig
     response: ResponseConfig
     pagination: Optional[PaginationConfig] = None
     schedule: Optional[ScheduleConfig] = None
     buffer: BufferConfig = Field(default_factory=BufferConfig)
     output: OutputConfig = Field(default_factory=OutputConfig)
+    
+    @property
+    def source_id(self) -> str:
+        """Alias for id to maintain compatibility."""
+        return self.id
 
 
 class SourceDefinition(BaseModel):

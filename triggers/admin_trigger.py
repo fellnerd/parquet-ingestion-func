@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 bp_admin_trigger = df.Blueprint()
 
 
-@bp_admin_trigger.route(route="admin/sources", methods=["GET"], auth_level=func.AuthLevel.FUNCTION)
+@bp_admin_trigger.route(route="mgmt/sources", methods=["GET"], auth_level=func.AuthLevel.FUNCTION)
 async def list_sources(req: func.HttpRequest) -> func.HttpResponse:
     """
     List all configured sources.
@@ -29,10 +29,10 @@ async def list_sources(req: func.HttpRequest) -> func.HttpResponse:
     
     try:
         loader = ConfigLoader()
-        sources = loader.get_all_sources()
+        source_def = loader.load_all_sources()
         
         result = []
-        for s in sources:
+        for s in source_def.sources:
             result.append({
                 "source_id": s.source_id,
                 "concept": s.concept,
@@ -59,7 +59,7 @@ async def list_sources(req: func.HttpRequest) -> func.HttpResponse:
         )
 
 
-@bp_admin_trigger.route(route="admin/sources/{source_id}", methods=["GET"], auth_level=func.AuthLevel.FUNCTION)
+@bp_admin_trigger.route(route="mgmt/sources/{source_id}", methods=["GET"], auth_level=func.AuthLevel.FUNCTION)
 async def get_source(req: func.HttpRequest) -> func.HttpResponse:
     """
     Get detailed configuration for a specific source.
@@ -111,7 +111,7 @@ async def get_source(req: func.HttpRequest) -> func.HttpResponse:
         )
 
 
-@bp_admin_trigger.route(route="admin/reload-config", methods=["POST"], auth_level=func.AuthLevel.FUNCTION)
+@bp_admin_trigger.route(route="mgmt/reload-config", methods=["POST"], auth_level=func.AuthLevel.FUNCTION)
 async def reload_config(req: func.HttpRequest) -> func.HttpResponse:
     """
     Force reload configuration from storage.
@@ -142,7 +142,7 @@ async def reload_config(req: func.HttpRequest) -> func.HttpResponse:
         )
 
 
-@bp_admin_trigger.route(route="admin/health", methods=["GET"], auth_level=func.AuthLevel.ANONYMOUS)
+@bp_admin_trigger.route(route="mgmt/health", methods=["GET"], auth_level=func.AuthLevel.ANONYMOUS)
 async def health_check(req: func.HttpRequest) -> func.HttpResponse:
     """
     Health check endpoint.
@@ -159,7 +159,7 @@ async def health_check(req: func.HttpRequest) -> func.HttpResponse:
     )
 
 
-@bp_admin_trigger.route(route="admin/buffer/{source_id}", methods=["GET"], auth_level=func.AuthLevel.FUNCTION)
+@bp_admin_trigger.route(route="mgmt/buffer/{source_id}", methods=["GET"], auth_level=func.AuthLevel.FUNCTION)
 async def get_buffer_status(req: func.HttpRequest) -> func.HttpResponse:
     """
     Get buffer status for a source.
@@ -218,7 +218,7 @@ async def get_buffer_status(req: func.HttpRequest) -> func.HttpResponse:
         )
 
 
-@bp_admin_trigger.route(route="admin/metadata/{source_id}", methods=["GET"], auth_level=func.AuthLevel.FUNCTION)
+@bp_admin_trigger.route(route="mgmt/metadata/{source_id}", methods=["GET"], auth_level=func.AuthLevel.FUNCTION)
 async def get_ingest_metadata(req: func.HttpRequest) -> func.HttpResponse:
     """
     Get ingestion metadata for a source.

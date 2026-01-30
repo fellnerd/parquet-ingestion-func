@@ -118,7 +118,10 @@ class ParquetWriter:
         elif isinstance(value, datetime):
             return pa.timestamp("us", tz="UTC")
         elif isinstance(value, list):
-            if value and len(value) > 0:
+            # If list contains dicts, store as JSON string
+            if value and isinstance(value[0], dict):
+                return pa.string()
+            elif value and len(value) > 0:
                 inner_type = self._python_to_arrow_type(value[0])
                 return pa.list_(inner_type)
             return pa.list_(pa.string())
@@ -134,6 +137,7 @@ class ParquetWriter:
         
         - Ensures all keys exist in each record
         - Converts dicts to JSON strings
+        - Converts lists containing dicts to JSON strings
         """
         import json
         
@@ -147,6 +151,9 @@ class ParquetWriter:
                 
                 # Convert dict to JSON string
                 if isinstance(value, dict):
+                    value = json.dumps(value)
+                # Convert list containing dicts to JSON string
+                elif isinstance(value, list) and value and isinstance(value[0], dict):
                     value = json.dumps(value)
                 
                 norm_record[name] = value

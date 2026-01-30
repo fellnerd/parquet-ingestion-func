@@ -4,7 +4,8 @@ Authentication Handler - Supports multiple authentication strategies.
 Supported auth types:
 - none: No authentication
 - basic: HTTP Basic Auth (username/password)
-- bearer: Bearer token
+- bearer: Bearer token (Authorization: Bearer xxx)
+- token: Token auth (Authorization: Token xxx) - used by Django REST Framework
 - api_key: API key in header or query param
 """
 import base64
@@ -18,7 +19,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class AuthConfig:
     """Authentication configuration."""
-    type: str  # none, basic, bearer, api_key
+    type: str  # none, basic, bearer, token, api_key
     username: Optional[str] = None
     password: Optional[str] = None
     token: Optional[str] = None
@@ -79,6 +80,13 @@ class AuthHandler:
             else:
                 logger.warning("Bearer auth configured but token missing")
         
+        elif self.config.type == "token":
+            # Django REST Framework style token auth
+            if self.config.token:
+                headers["Authorization"] = f"Token {self.config.token}"
+            else:
+                logger.warning("Token auth configured but token missing")
+        
         elif self.config.type == "api_key":
             if self.config.api_key and not self.config.api_key_query_param:
                 headers[self.config.api_key_header] = self.config.api_key
@@ -111,6 +119,9 @@ class AuthHandler:
             return bool(self.config.username and self.config.password)
         
         if self.config.type == "bearer":
+            return bool(self.config.token)
+        
+        if self.config.type == "token":
             return bool(self.config.token)
         
         if self.config.type == "api_key":

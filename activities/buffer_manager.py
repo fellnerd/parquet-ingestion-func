@@ -145,7 +145,10 @@ def append_buffer(input: dict) -> dict:
     records = input.get("records", [])
     current_state = input.get("current_state", {})
     
+    logger.info(f"append_buffer called: source_id={source_id}, records_count={len(records) if records else 0}")
+    
     if not source_id or not records:
+        logger.warning(f"append_buffer early return: source_id={source_id}, records={bool(records)}")
         return current_state
     
     logger.info(f"Appending {len(records)} records to buffer: {source_id}")

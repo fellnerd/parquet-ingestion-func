@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 bp_http_trigger = df.Blueprint()
 
 
-@bp_http_trigger.route(route="ingest/{source_id}", methods=["POST"])
+@bp_http_trigger.route(route="ingest/{*source_id}", methods=["POST"])
 @bp_http_trigger.durable_client_input(client_name="client")
 async def http_ingest(req: func.HttpRequest, client: df.DurableOrchestrationClient) -> func.HttpResponse:
     """
@@ -71,7 +71,7 @@ async def http_ingest(req: func.HttpRequest, client: df.DurableOrchestrationClie
     return client.create_check_status_response(req, instance_id)
 
 
-@bp_http_trigger.route(route="ingest/{source_id}", methods=["GET"])
+@bp_http_trigger.route(route="ingest/{*source_id}", methods=["GET"])
 @bp_http_trigger.durable_client_input(client_name="client")
 async def http_ingest_status(req: func.HttpRequest, client: df.DurableOrchestrationClient) -> func.HttpResponse:
     """

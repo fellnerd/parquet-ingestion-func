@@ -49,15 +49,19 @@ def write_parquet(input: dict) -> dict:
     
     buffer_path = buffer_state.get("buffer_file_path")
     if not buffer_path:
+        logger.error(f"write_parquet: No buffer file path in state: {buffer_state}")
         return {"success": False, "error": "No buffer file path"}
     
-    logger.info(f"Writing Parquet for source: {source_id}")
+    logger.info(f"Writing Parquet for source: {source_id}, buffer_path: {buffer_path}")
     
     try:
         # Read records from buffer
         records = _read_buffer(buffer_path)
         
+        logger.info(f"Read {len(records) if records else 0} records from buffer")
+        
         if not records:
+            logger.warning(f"Buffer is empty at path: {buffer_path}")
             return {
                 "success": False,
                 "error": "Buffer is empty",
@@ -72,10 +76,11 @@ def write_parquet(input: dict) -> dict:
         entity = config.get("entity", "unknown")
         output_config = config.get("output", {})
         
-        # Write Parquet
+        # Write Parquet - prefer ADLS account with managed identity, fallback to connection string
         writer = ParquetWriter(
-            connection_string=os.getenv("PARQUET_OUTPUT_CONNECTION") or 
-                            os.getenv("PARQUET_CONFIG_STORAGE_CONNECTION")
+            adls_account=os.getenv("PARQUET_OUTPUT_ADLS_ACCOUNT"),
+            container=os.getenv("PARQUET_OUTPUT_CONTAINER", "stage-fs"),
+            connection_string=os.getenv("PARQUET_OUTPUT_CONNECTION")
         )
         
         result = writer.write(
@@ -130,13 +135,18 @@ def _read_buffer(buffer_path: str) -> list[dict]:
         container_client = blob_service.get_container_client(BUFFER_CONTAINER)
         blob_client = container_client.get_blob_client(buffer_path)
         
+        logger.info(f"Reading buffer from container={BUFFER_CONTAINER}, path={buffer_path}")
         content = blob_client.download_blob().readall().decode("utf-8")
         records = [json.loads(line) for line in content.strip().split("\n") if line]
         
+        logger.info(f"Successfully read {len(records)} records from buffer blob")
         return records
     
     except ResourceNotFoundError:
         logger.warning(f"Buffer blob not found: {buffer_path}")
+        return []
+    except Exception as e:
+        logger.error(f"Failed to read buffer blob: {e}")
         return []
     
     except Exception as e:

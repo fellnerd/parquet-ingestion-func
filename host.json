@@ -8,10 +8,13 @@
       }
     },
     "logLevel": {
-      "default": "Information",
-      "Host.Results": "Error",
+      "default": "Warning",
       "Function": "Information",
-      "Host.Aggregator": "Trace"
+      "Host.Results": "Error",
+      "Host.Aggregator": "Error",
+      "DurableTask.AzureStorage": "Warning",
+      "DurableTask.Core": "Warning",
+      "Microsoft.Azure.WebJobs.Extensions.DurableTask": "Warning"
     }
   },
   "extensions": {

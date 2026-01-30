@@ -30,6 +30,7 @@ local.settings.json
 .python_packages/
 bin/
 obj/
+azurite-data/
 
 # IDE
 .vscode/
