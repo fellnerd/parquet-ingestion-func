@@ -1,5 +1,5 @@
 ### Variables
-@baseUrl = https://dimetrics-api-weu-001.azure-api.net/func-parquetingest-weu-001
+@baseUrl = https://EWB-api-weu-001.azure-api.net/func-parquetingest-weu-001
 @apiKey = {{$dotenv AZURE_APIM_KEY}}
 @sourceId = werkportal__api__invoice
 @sourceIdEncoded = werkportal__api__invoice
